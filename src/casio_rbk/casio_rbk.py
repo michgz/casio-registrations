@@ -172,7 +172,10 @@ class RegistrationBank:
     self.registrations[n] = r
 
   def __iter__(self):
-    return self.registrations
+    return iter(self.registrations)
+    
+  def __len__(self):
+    return len(self.registrations)
 
 
 
