@@ -42,26 +42,35 @@ class Registration:
 
   def __bytes__(self):
     return bytes(self.data)
+    
+  def __iter__(self):
+    self.i = 0
+    return self
+    
+  def __next__(self):
+    # "Walk" through the atoms in the registration
+    if self.i < len(self.data):
+      (atom_type, atom_len) = struct.unpack_from('<2B', self.data, self.i)
+      b = self.data[self.i+2:self.i+2+atom_len]
+      self.i += 2+atom_len
+      return (atom_type, b)
+    else:
+      raise StopIteration
 
   def __getitem__(self, n):
     # "Walk" the data to find the item
     
-    i = 0
-    while i < len(self.data):
-      (atom_type, atom_len) = struct.unpack_from('<2B', self.data, i)
-      if atom_type == n:
+    for (atom, b) in self:
+      if atom == n:
         # Found it!
-        return bytes(self.data[i+2:i+2+atom_len])
-      elif atom_type == 0xFF:
-        # End
-        break
-      i += 2+atom_len
+        return bytes(b)
     # If get here, haven't found it
     return None
     
 
   def __setitem__(self, n, x):
-    # "Walk" the data to find the item
+    # "Walk" the data to find the item. Can't use the iterator in this case
+    # because that returns a read-only value
     
     i = 0
     while i < len(self.data):
@@ -204,11 +213,4 @@ class RegistrationBank:
     
   def __len__(self):
     return len(self.registrations)
-
-
-
-
-
-
-
 
