@@ -10,16 +10,19 @@ from casio_rbk.casio_rbk import Atom, Part, RegistrationBank
 
 with open("BANK01.RBK", "r+b") as f:
     # Read from file
-    r = RegistrationBank.readFile(f)
+    rb = RegistrationBank.readFile(f)
     
-    # Part L off, U1 & U2 full volume
-    r.setVolumes(127, 127, 0)
+    # For the first three registrations in the bank (out of either 4 or 8)
+    for r in rb[0:3]:
     
-    # Part U1 panned hard left, U2 hard right
-    r.setPans(0, 127, 40)
+        # Part L off, U1 & U2 full volume
+        r.setVolumes(127, 127, 0)
     
-    # Write back to file
-    r.writeFile(f)
+        # Part U1 panned hard left, U2 hard right
+        r.setPans(0, 127, 40)
+    
+    # Write the bank back to file
+    rb.writeFile(f)
 ```
 
 ## Documentation
