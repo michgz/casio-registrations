@@ -3,7 +3,7 @@ import csv
 
 def patch_name(patch_no, bank_msb):
   
-  patch_data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../patch_data")
+  patch_data_dir = os.path.join(os.path.dirname(__file__), "patch_data")
   
   with open(os.path.join(patch_data_dir, "CT-X5000 tone.csv"), "r") as f1:
     csvread = csv.reader(f1)

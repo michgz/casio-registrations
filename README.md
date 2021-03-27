@@ -47,3 +47,11 @@ Part.U2 = 1
 Part.L = 2
 Part.Auto_Harmony = 4
 ```
+
+## Unit Tests
+
+Run unit tests by calling
+
+```bash
+python -m unittest casio_rbk/casio_rbk/tests.py
+```

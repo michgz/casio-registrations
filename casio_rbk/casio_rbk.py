@@ -40,6 +40,9 @@ class Registration:
     if data:
       self.data = bytearray(data)
 
+  def __bytes__(self):
+    return bytes(self.data)
+
   def __getitem__(self, n):
     # "Walk" the data to find the item
     
@@ -77,6 +80,21 @@ class Registration:
       i += 2+atom_len
     # If get here, haven't found it. Could raise an error
 
+  def __len__(self):
+    # "Walk" the data to count total items
+    
+    i = 0
+    count = 0
+    while i < len(self.data):
+      count += 1
+      (atom_type, atom_len) = struct.unpack_from('<2B', self.data, i)
+      if atom_type == 0xFF:
+        # End
+        break
+      i += 2+atom_len
+    return count
+
+
 
   # Now some convenience functions, specifically for CT-X700/800:
   def setVolumes(self, u1_vol, u2_vol, l1_vol):
@@ -91,7 +109,13 @@ class Registration:
   def getPans(self):
     return(struct.unpack('<3B', self.__getitem__(Atom.Pan)[0:3]))
 
-
+  def getPatchBank(self, part):
+    # Returns (patch, bankMSB) as a tuple. Can be passed to patch_name function
+    # using a prefix "*". For example:
+    #
+    #   MyPatchName = patch_name.patch_name(*MyReg.getPatchBank(Part.U1))
+    
+    return(struct.unpack_from('<2B', self.__getitem__(Atom.Patch), 2*part))
 
 
 
@@ -99,13 +123,14 @@ class RegistrationBank:
   
   def __init__(self, keyboard="CT-X700"):
     self.keyboard=keyboard
-    self.registrations=[Registration(), Registration(), Registration(), Registration()]
+    self.registrations=[]
 
-  def readFile(self, f):
+  @classmethod
+  def readFile(cls, f):
     bin_str = f.read()
     
     # First 16 bytes contain the keyboard type
-    self.keyboard = bin_str[0:16].strip(b'\x00')
+    keyboard = bin_str[0:16].decode('ascii').strip('\x00')
     i = 16
 
     if bin_str[i:i+4] != b'RBKH':
@@ -135,8 +160,10 @@ class RegistrationBank:
         
       i += 4
 
-    self.registrations = regs
-    return self
+    
+    obj = cls(keyboard)
+    obj.registrations = regs
+    return obj
 
   def writeFile(self, f):
     
@@ -155,14 +182,15 @@ class RegistrationBank:
     b += b'RBKH'
     b += struct.pack('<I', fmt['file_version'])
     
-    for reg in regs:
+    for reg_bytes in [bytes(reg) for reg in regs]:
       
       b += b'REGH'
-      b += struct.pack('<3I', fmt['file_version'], binascii.crc32(reg), len(reg))
-      b += reg
+      b += struct.pack('<3I', fmt['file_version'], binascii.crc32(reg_bytes), len(reg_bytes))
+      b += reg_bytes
       b += b'EODA'
-      
-    f.write(b)
+    
+    f.seek(0, 0) # Make sure we are writing to the beginning of the file
+    f.write(b)   # Write it
     return self
 
   def __getitem__(self, n):
