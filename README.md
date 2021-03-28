@@ -68,7 +68,7 @@ A Registration class object defines a collection of settings for a Casio keyboar
 
 #### setVolumes
 
-Set volumes on first three keyboard parts
+Set volumes of the first three keyboard parts (U1, U2 and L):
 
 Usage:  setVolumes(self, u1_vol, u2_vol, l_vol)
 Parameters:  u1_vol    Volume to set on U1 part. Integer 0 -- 127
@@ -82,7 +82,7 @@ MyReg.setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at full volu
 
 #### setPans
 
-Set stereo pan on first three keyboard parts
+Set stereo pan of the first three keyboard parts (U1, U2 and L):
 
 Usage:  setPans(self, u1_pan, u2_pan, l_pan)
 Parameters:  u1_pan    Pan to set on U1 part. Integer 0 -- 127; centre pan is 64
