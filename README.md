@@ -42,14 +42,13 @@ Member functions of this class:
 
 Creates a new object with data from a .RBK file
 
-<b>Usage:</b>
+:blue_square: Usage:
 * @classmember readFile(cls, fileHandle)
 
-
-<b>Parameters:</b>
+:blue_square: Parameters:
 * fileHandle &emsp; handle to a file that has been opened with binary read ("rb") or binary read/write ("r+b") mode
 
-<b>Returns:</b>
+:blue_square: Returns:
 * a RegistrationBank object
 
 
@@ -66,10 +65,10 @@ with open("BANK01.RBK", "rb") as f1:
 
 Writes the data to a .RBK file
 
-<b>Usage:</b>
+:blue_square: Usage:
 * writeFile(self, fileHandle)
 
-<b>Parameters:</b>
+:blue_square: Parameters:
 * fileHandle  &emsp; handle to a file that has been opened with binary write ("wb") or binary read/write ("r+b") mode
 
 Example:
@@ -99,10 +98,10 @@ A Registration class object defines a collection of settings for a Casio keyboar
 
 Set volumes of the first three keyboard parts (U1, U2 and L):
 
-<b>Usage:</b>
+:blue_square: Usage:
 * setVolumes(self, u1_vol, u2_vol, l_vol)
 
-<b>Parameters:</b>
+:blue_square: Parameters:
 * u1_vol  &emsp; Volume to set on U1 part. Integer 0 -- 127
 * u2_vol  &emsp; Volume to set on U2 part. Integer 0 -- 127
 * l_vol   &emsp; Volume to set on L part (called "L1" on some keyboards). Integer 0 -- 127
@@ -116,10 +115,10 @@ MyRegBank[0].setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at fu
 
 Set stereo pan of the first three keyboard parts (U1, U2 and L):
 
-<b>Usage:</b>
+:blue_square: Usage:
 * setPans(self, u1_pan, u2_pan, l_pan)
 
-<b>Parameters:</b>
+:blue_square: Parameters:
 * u1_pan  &emsp; Pan to set on U1 part. Integer 0 -- 127; centre pan is 64
 * u2_pan  &emsp; Pan to set on U2 part. Integer 0 -- 127; centre pan is 64
 * l_pan   &emsp; Pan to set on L part (called "L1" on some keyboards). Integer 0 -- 127; centre pan is 64
@@ -133,13 +132,13 @@ MyRegBank[1].setPans(0, 127, 64)    # Pan U1 hard left and U2 hard right
 
 Gets the patch and bank settings on one of the first five parts.
 
-<b>Usage:</b>
+:blue_square: Usage:
 * getPatchBank(self, part)
 
-<b>Parameters:</b>
+:blue_square: Parameters:
 * part  &emsp; Part number to get the patch and bank for. Integer 0 - 4.
 
-<b>Returns:</b>
+:blue_square: Returns:
 * tuple (patch number, bank MSB number)
 
 Example:
@@ -194,14 +193,14 @@ The `patch_name` module translates Patch and Bank MSB values into instrument nam
 
 #### patch_name()
 
-<b>Usage:</b>
+:blue_square: Usage:
 * patch_name(patch, bank_msb)
 
-<b>Parameters:</b>
+:blue_square: Parameters:
 * patch   &emsp; Patch number. Integer 0 - 127
 * bank_msb  &emsp;  Bank MSB number. Integer 0 - 120
               
-<b>Returns:</b>
+:blue_square: Returns:
 * String giving the patch name
 
 The tuples returned from function `getPatchBank` can be used as input provided they are preceded by an asterisk "*".
