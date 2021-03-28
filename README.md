@@ -111,9 +111,11 @@ print(f"Patch number of U2 part = {patch}")
 print(f"Bank MSB number of U2 part = {bankmsb}")
 ```
 
-#### iteration and subscripting
+#### Iterating and subscripting
 
-The Registration object looks like a Python dictionary and can be iterated or subscripted. The keys are integers in range 1 -- 255 and values are bytestrings.
+The Registration object looks like a Python dictionary which can be iterated or subscripted. Keys are integers in range 1 - 255 and values are bytestrings containing some data.
+
+This is an advanced use-case for the class. In most cases the three functions above will do everything that's needed.
 
 Example:
 ```python
@@ -121,7 +123,7 @@ from casio_rbk import Registration
 ...
 # Change the Chorus type value to 6
 # Atom 0x5E has a two-byte data value specifying Reverb type and Chous type
-# Here we write the second byte, which is Chorus type:
+# Write the second byte, which is Chorus type:
 MyReg[0x5E][1] = 6
 ```
 
