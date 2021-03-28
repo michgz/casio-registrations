@@ -44,6 +44,16 @@ Usage:  @classmember
 Parameters:  fileHandle     handle to a file that has been opened with binary read ("rb") or binary read/write ("r+b") mode
 Returns:     a RegistrationBank object
 
+
+Example:
+```python
+from casio_rbk import RegistrationBank
+# Read from a file
+with open("BANK01.RBK", "rb") as f1:
+    MyRegBank = RegistrationBank.readFile(f1)
+...
+```
+
 #### writeFile
 
 Writes the data to a .RBK file
@@ -54,11 +64,9 @@ Parameters:  fileHandle     handle to a file that has been opened with binary wr
 Example:
 ```python
 from casio_rbk import RegistrationBank
-# Read from a file
-with open("BANK01.RBK", "rb") as f1:
-    MyRegBank = RegistrationBank().readFile(f1)
-# Write to a different file
-with open("BANK01COPY.RBK", "wb" as f2:
+...
+# Write to a file
+with open("BANK02.RBK", "wb" as f2:
     MyRegBank.writeFile(f2)
 ```
 
