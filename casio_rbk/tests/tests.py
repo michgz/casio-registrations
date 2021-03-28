@@ -6,7 +6,7 @@ import os.path
 import filecmp
 import struct
 
-from casio_rbk.casio_rbk import RegistrationBank, Atom
+from casio_rbk.casio_rbk import RegistrationBank, Atom, Part
 from casio_rbk.patch_name import patch_name
 
 
@@ -18,6 +18,7 @@ class TestCasioRbk(unittest.TestCase):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_03_Input_Output.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X3000 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_04_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_05_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_06_Input_Output.RBK"))
 
   def tearDownClass():
     os.remove(os.path.join(gettempdir(), "Test_01_Input.RBK"))
@@ -94,6 +95,21 @@ class TestCasioRbk(unittest.TestCase):
       
     self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_05_Output_1.txt"), os.path.join(os.path.dirname(__file__), "Test_05_Expected_Output.txt")))
     self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_05_Output_2.txt"), os.path.join(os.path.dirname(__file__), "Test_05_Expected_Output.txt")))
+
+  def test_06(self):
+    # Check the example given in documentation
+    with open(os.path.join(gettempdir(), "Test_06_Input_Output.RBK"), "r+b") as f1:
+      r = RegistrationBank.readFile(f1)
+      MyReg = r[0]
+      
+      vols = bytearray(MyReg[Atom.Volume])
+      vols[Part.U2] = 115
+      MyReg[Atom.Volume] = bytes(vols)
+      
+      r.writeFile(f1)
+    
+    self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_06_Input_Output.RBK"), os.path.join(os.path.dirname(__file__), "Test_06_Expected_Output.RBK")))
+
 
 
 
