@@ -6,7 +6,7 @@ Python library for handling Casio registration bank (.RBK) files
 An example of how to use the library:
 
 ```python
-from casio_rbk.casio_rbk import Atom, Part, RegistrationBank
+from casio_rbk.casio_rbk import RegistrationBank
 
 with open("BANK01.RBK", "r+b") as f:
     # Read from file
@@ -72,7 +72,7 @@ with open("BANK02.RBK", "wb" as f2:
 
 ### Registration
 
-A Registration class object defines a collection of settings for a Casio keyboard. Member functions of this class:
+A Registration class object defines a collection of settings for a Casio keyboard. Settings include volume and pan for each keyboard part and lots of other stuff. Member functions of this class:
 
 #### setVolumes
 
@@ -85,7 +85,7 @@ Parameters:  u1_vol    Volume to set on U1 part. Integer 0 -- 127
 
 Example:
 ```python
-MyReg.setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at full volume
+MyRegBank[0].setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at full volume
 ```
 
 #### setPans
@@ -99,7 +99,7 @@ Parameters:  u1_pan    Pan to set on U1 part. Integer 0 -- 127; centre pan is 64
 
 Example:
 ```python
-MyReg.setPans(0, 127, 64)    # Pan U1 hard left and U2 hard right
+MyRegBank[1].setPans(0, 127, 64)    # Pan U1 hard left and U2 hard right
 ```
 
 #### getPatchBank
@@ -112,9 +112,9 @@ Returns:      tuple (patch number, bank MSB number)
 
 Example:
 ```python
-from casio_rbk import Registration, Part
+from casio_rbk import RegistrationBank, Part
 ...
-(patch, bankmsb) = MyReg.getPatchBank(Part.U2)
+(patch, bankmsb) = MyRegBank[2].getPatchBank(Part.U2)
 print(f"Patch number of U2 part = {patch}")
 print(f"Bank MSB number of U2 part = {bankmsb}")
 ```
@@ -127,12 +127,10 @@ This is an advanced use-case for the class. In most cases the three functions ab
 
 Example:
 ```python
-from casio_rbk import Registration
+from casio_rbk import Registration, Atom, Part
 ...
-# Change the Chorus type value to 6
-# Atom 0x5E has a two-byte data value specifying Reverb type and Chous type
-# Write the second byte, which is Chorus type:
-MyReg[0x5E][1] = 6
+# Change the Volume of U2 part to 115. ADVANCED - SHOULD NORMALLY USE setVolumes() INSTEAD!!
+MyReg[Atom.Volume][Part.U2] = 115
 ```
 
 ### Atom
@@ -147,13 +145,35 @@ Atom.Pan = 0x12
 
 ### Part
 
-Defines possible `part` parameter values as input to the getPatchBank() function:
+Defines possible `part` parameter values for input to the getPatchBank() function:
 
 ```python
 Part.U1 = 0
 Part.U2 = 1
 Part.L = 2
 Part.Auto_Harmony = 4
+```
+
+### patch_name
+
+The `patch_name` module translates Patch and Bank MSB values into instrument names specific to the CT-X keyboards. It has only one function defined:
+
+#### patch_name()
+
+Usage:  patch_name(patch, bank_msb)
+Parameters:    patch    Patch number. Integer 0 - 127
+               bank_msb  Bank MSB number. Integer 0 - 120
+Returns:       A string giving the patch name
+
+The tuples returned from function `getPatchBank` can be used as input provided they are preceded by an asterisk "*".
+
+Example:
+
+```python
+from casio_rbk.casio_rbk import RegistrationBank, Part
+from casio_rbk.patch_name import patch_name
+...
+print("Patch in U1 is: " + patch_name(*MyRegBank[0].getPatchBank(Part.U1)))
 ```
 
 ## Unit Tests
