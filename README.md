@@ -130,7 +130,9 @@ Example:
 from casio_rbk import Registration, Atom, Part
 ...
 # Change the Volume of U2 part to 115. ADVANCED - SHOULD NORMALLY USE setVolumes() INSTEAD!!
-MyReg[Atom.Volume][Part.U2] = 115
+vols = bytearray(MyReg[Atom.Volume])
+vols[Part.U2] = 115
+MyReg[Atom.Volume] = bytes(vols)
 ```
 
 ### Atom
