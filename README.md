@@ -6,7 +6,7 @@ Python library for handling Casio registration bank (.RBK) files
 An example of how to use the library:
 
 ```python
-from casio_rbk.casio_rbk import RegistrationBank
+from casio_rbk.casio_rbk import RegistrationBank, Part
 
 with open("BANK01.RBK", "r+b") as f:
     # Read from file
@@ -23,6 +23,9 @@ with open("BANK01.RBK", "r+b") as f:
     
     # Write the bank back to file
     rb.writeFile(f)
+    
+    # Print the instrument patch name of the U1 part
+    print("Patch in U1 of first Reg is: " + patch_name(*rb[0].getPatchBank(Part.U1)))
 ```
 
 ## Documentation
@@ -39,10 +42,14 @@ Member functions of this class:
 
 Creates a new object with data from a .RBK file
 
-Usage:  @classmember
-        readFile(cls, fileHandle)
-Parameters:  fileHandle     handle to a file that has been opened with binary read ("rb") or binary read/write ("r+b") mode
-Returns:     a RegistrationBank object
+:blue_square: Usage:
+* @classmember readFile(cls, fileHandle)
+
+:blue_square: Parameters:
+* fileHandle &emsp; handle to a file that has been opened with binary read ("rb") or binary read/write ("r+b") mode
+
+:blue_square: Returns:
+* a RegistrationBank object
 
 
 Example:
@@ -58,8 +65,11 @@ with open("BANK01.RBK", "rb") as f1:
 
 Writes the data to a .RBK file
 
-Usage:  writeFile(self, fileHandle)
-Parameters:  fileHandle     handle to a file that has been opened with binary write ("wb") or binary read/write ("r+b") mode
+:blue_square: Usage:
+* writeFile(self, fileHandle)
+
+:blue_square: Parameters:
+* fileHandle  &emsp; handle to a file that has been opened with binary write ("wb") or binary read/write ("r+b") mode
 
 Example:
 ```python
@@ -70,6 +80,16 @@ with open("BANK02.RBK", "wb" as f2:
     MyRegBank.writeFile(f2)
 ```
 
+#### Iterating and subscripting
+
+The RegistrationBank contains 4 or 8 Registration objects, which can be accessed by iteration or subscripts (like an array).
+
+Example:
+```python
+for MyReg in MyRegBank1:
+    ...  # do something with the Registration
+```
+
 ### Registration
 
 A Registration class object defines a collection of settings for a Casio keyboard. Settings include volume and pan for each keyboard part and lots of other stuff. Member functions of this class:
@@ -78,37 +98,66 @@ A Registration class object defines a collection of settings for a Casio keyboar
 
 Set volumes of the first three keyboard parts (U1, U2 and L):
 
-Usage:  setVolumes(self, u1_vol, u2_vol, l_vol)
-Parameters:  u1_vol    Volume to set on U1 part. Integer 0 -- 127
-             u2_vol    Volume to set on U2 part. Integer 0 -- 127
-             l_vol     Volume to set on L part (called "L1" on some keyboards). Integer 0 -- 127
+:blue_square: Usage:
+* setVolumes(self, u1_vol, u2_vol, l_vol)
+
+:blue_square: Parameters:
+* u1_vol  &emsp; Volume to set on U1 part. Integer 0 -- 127
+* u2_vol  &emsp; Volume to set on U2 part. Integer 0 -- 127
+* l_vol   &emsp; Volume to set on L part (called "L1" on some keyboards). Integer 0 -- 127
 
 Example:
 ```python
 MyRegBank[0].setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at full volume
 ```
 
+The setVolumes() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+b = reg[Atom.Volume]
+reg[Atom.Volume] = struct.pack('3B', u1_vol, u2_vol, u3_vol) + b[3:]
+```
+
 #### setPans
 
 Set stereo pan of the first three keyboard parts (U1, U2 and L):
 
-Usage:  setPans(self, u1_pan, u2_pan, l_pan)
-Parameters:  u1_pan    Pan to set on U1 part. Integer 0 -- 127; centre pan is 64
-             u2_pan    Pan to set on U2 part. Integer 0 -- 127; centre pan is 64
-             l_pan     Pan to set on L part (called "L1" on some keyboards). Integer 0 -- 127; centre pan is 64
+:blue_square: Usage:
+* setPans(self, u1_pan, u2_pan, l_pan)
+
+:blue_square: Parameters:
+* u1_pan  &emsp; Pan to set on U1 part. Integer 0 -- 127; centre pan is 64
+* u2_pan  &emsp; Pan to set on U2 part. Integer 0 -- 127; centre pan is 64
+* l_pan   &emsp; Pan to set on L part (called "L1" on some keyboards). Integer 0 -- 127; centre pan is 64
 
 Example:
 ```python
 MyRegBank[1].setPans(0, 127, 64)    # Pan U1 hard left and U2 hard right
 ```
 
+The setPans() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+b = reg[Atom.Pan]
+reg[Atom.Pan] = struct.pack('3B', u1_pan, u2_pan, u3_pan) + b[3:]
+```
+
 #### getPatchBank
 
 Gets the patch and bank settings on one of the first five parts.
 
-Usage:   getPatchBank(self, part)
-Parameters:   part   Part number to get the patch and bank for. Integer 0 -- 4.
-Returns:      tuple (patch number, bank MSB number)
+:blue_square: Usage:
+* getPatchBank(self, part)
+
+:blue_square: Parameters:
+* part  &emsp; Part number to get the patch and bank for. Integer 0 - 4.
+
+:blue_square: Returns:
+* tuple (patch number, bank MSB number)
 
 Example:
 ```python
@@ -117,6 +166,14 @@ from casio_rbk import RegistrationBank, Part
 (patch, bankmsb) = MyRegBank[2].getPatchBank(Part.U2)
 print(f"Patch number of U2 part = {patch}")
 print(f"Bank MSB number of U2 part = {bankmsb}")
+```
+
+The getPatchBank() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+(patch, bankmsb) = struct.unpack_from('2B', reg[Atom.Patch], 2*part)
 ```
 
 #### Iterating and subscripting
@@ -162,10 +219,15 @@ The `patch_name` module translates Patch and Bank MSB values into instrument nam
 
 #### patch_name()
 
-Usage:  patch_name(patch, bank_msb)
-Parameters:    patch    Patch number. Integer 0 - 127
-               bank_msb  Bank MSB number. Integer 0 - 120
-Returns:       A string giving the patch name
+:blue_square: Usage:
+* patch_name(patch, bank_msb)
+
+:blue_square: Parameters:
+* patch   &emsp; Patch number. Integer 0 - 127
+* bank_msb  &emsp;  Bank MSB number. Integer 0 - 120
+              
+:blue_square: Returns:
+* String giving the patch name
 
 The tuples returned from function `getPatchBank` can be used as input provided they are preceded by an asterisk "*".
 
