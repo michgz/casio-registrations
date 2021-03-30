@@ -38,7 +38,7 @@ A RegistrationBank should always be created by reading in a file with the `readF
 
 Member functions of this class:
 
-#### readFile
+#### readFile()
 
 Creates a new object with data from a .RBK file
 
@@ -61,7 +61,7 @@ with open("BANK01.RBK", "rb") as f1:
 ...
 ```
 
-#### writeFile
+#### writeFile()
 
 Writes the data to a .RBK file
 
@@ -94,7 +94,7 @@ for MyReg in MyRegBank1:
 
 A Registration class object defines a collection of settings for a Casio keyboard. Settings include volume and pan for each keyboard part and lots of other stuff. Member functions of this class:
 
-#### setVolumes
+#### setVolumes()
 
 Set volumes of the first three keyboard parts (U1, U2 and L):
 
@@ -120,7 +120,7 @@ b = reg[Atom.Volume]
 reg[Atom.Volume] = struct.pack('3B', u1_vol, u2_vol, u3_vol) + b[3:]
 ```
 
-#### setPans
+#### setPans()
 
 Set stereo pan of the first three keyboard parts (U1, U2 and L):
 
@@ -146,7 +146,7 @@ b = reg[Atom.Pan]
 reg[Atom.Pan] = struct.pack('3B', u1_pan, u2_pan, u3_pan) + b[3:]
 ```
 
-#### getPatchBank
+#### getPatchBank()
 
 Gets the patch and bank settings on one of the first five parts.
 
