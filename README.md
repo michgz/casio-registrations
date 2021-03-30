@@ -82,7 +82,7 @@ with open("BANK02.RBK", "wb" as f2:
 
 #### Iterating and subscripting
 
-The RegistrationBank can be iterated or subscripted like an array of Registration objects.
+The RegistrationBank contains 4 or 8 Registration objects, which can be accessed by iteration or subscripts (like an array).
 
 Example:
 ```python
@@ -111,6 +111,15 @@ Example:
 MyRegBank[0].setVolumes(127, 0, 127)    # Turn off U2 while leaving U1 & L at full volume
 ```
 
+The setVolumes() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+b = reg[Atom.Volume]
+reg[Atom.Volume] = struct.pack('3B', u1_vol, u2_vol, u3_vol) + b[3:]
+```
+
 #### setPans
 
 Set stereo pan of the first three keyboard parts (U1, U2 and L):
@@ -126,6 +135,15 @@ Set stereo pan of the first three keyboard parts (U1, U2 and L):
 Example:
 ```python
 MyRegBank[1].setPans(0, 127, 64)    # Pan U1 hard left and U2 hard right
+```
+
+The setPans() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+b = reg[Atom.Pan]
+reg[Atom.Pan] = struct.pack('3B', u1_pan, u2_pan, u3_pan) + b[3:]
 ```
 
 #### getPatchBank
@@ -148,6 +166,14 @@ from casio_rbk import RegistrationBank, Part
 (patch, bankmsb) = MyRegBank[2].getPatchBank(Part.U2)
 print(f"Patch number of U2 part = {patch}")
 print(f"Bank MSB number of U2 part = {bankmsb}")
+```
+
+The getPatchBank() function is equivalent to:
+```python
+from casio_rbk.casio_rbk import Registration, Atom
+import struct
+...
+(patch, bankmsb) = struct.unpack_from('2B', reg[Atom.Patch], 2*part)
 ```
 
 #### Iterating and subscripting
