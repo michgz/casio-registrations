@@ -19,6 +19,9 @@ class TestCasioRbk(unittest.TestCase):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X3000 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_04_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_05_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_06_Input_Output.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_07_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_08_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_09_Input.RBK"))
 
   def tearDownClass():
     os.remove(os.path.join(gettempdir(), "Test_01_Input.RBK"))
@@ -29,6 +32,14 @@ class TestCasioRbk(unittest.TestCase):
     os.remove(os.path.join(gettempdir(), "Test_05_Input.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_05_Output_1.txt"))
     os.remove(os.path.join(gettempdir(), "Test_05_Output_2.txt"))
+    os.remove(os.path.join(gettempdir(), "Test_06_Input_Output.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_07_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_07_Output_1.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_07_Output_2.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_08_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_08_Output_1.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_08_Output_2.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_09_Input.RBK"))
     pass
 
     
@@ -109,6 +120,66 @@ class TestCasioRbk(unittest.TestCase):
       r.writeFile(f1)
     
     self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_06_Input_Output.RBK"), os.path.join(os.path.dirname(__file__), "Test_06_Expected_Output.RBK")))
+
+  def test_07(self):
+    # Check the equivalence in the documentation
+    vol = [0x50, 0x53, 0x5E]
+
+    with open(os.path.join(gettempdir(), "Test_07_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+
+    r[1].setVolumes(vol[0], vol[1], vol[2])
+    with open(os.path.join(gettempdir(), "Test_07_Output_1.RBK"), "wb") as f2:
+      r.writeFile(f2)
+    
+    with open(os.path.join(gettempdir(), "Test_07_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+
+    b = r[1][Atom.Volume]
+    r[1][Atom.Volume] = struct.pack('3B', vol[0], vol[1], vol[2]) + b[3:]
+    
+    with open(os.path.join(gettempdir(), "Test_07_Output_2.RBK"), "wb") as f2:
+      r.writeFile(f2)
+
+    
+    self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_07_Output_1.RBK"), os.path.join(gettempdir(), "Test_07_Output_2.RBK")))
+
+
+  def test_08(self):
+    # Check the equivalence in the documentation
+    pan = [0x3B, 0x27, 0x44]
+
+    with open(os.path.join(gettempdir(), "Test_08_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+
+    r[2].setPans(pan[0], pan[1], pan[2])
+    with open(os.path.join(gettempdir(), "Test_08_Output_1.RBK"), "wb") as f2:
+      r.writeFile(f2)
+    
+    with open(os.path.join(gettempdir(), "Test_08_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+
+    b = r[2][Atom.Pan]
+    r[2][Atom.Pan] = struct.pack('3B', pan[0], pan[1], pan[2]) + b[3:]
+    
+    with open(os.path.join(gettempdir(), "Test_08_Output_2.RBK"), "wb") as f2:
+      r.writeFile(f2)
+
+    
+    self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_08_Output_1.RBK"), os.path.join(gettempdir(), "Test_08_Output_2.RBK")))
+
+  def test_09(self):
+    # Check the equivalence in the documentation
+    part_num = 2
+
+    with open(os.path.join(gettempdir(), "Test_09_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+      
+    tuple_1 = r[3].getPatchBank(part_num)
+    
+    tuple_2 = struct.unpack_from('2B', r[3][Atom.Patch], 2*part_num)
+    
+    self.assertEqual(tuple_1, tuple_2)
 
 
 
