@@ -7,6 +7,7 @@ An example of how to use the library:
 
 ```python
 from casio_rbk.casio_rbk import RegistrationBank, Part
+from casio_rbk.patch_name import patch_name
 
 with open("BANK01.RBK", "r+b") as f:
     # Read from file
