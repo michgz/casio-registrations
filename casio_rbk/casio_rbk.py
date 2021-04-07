@@ -34,6 +34,37 @@ REGISTRATION_FORMATS = {
 
 class Registration:
   
+  class RegistrationData(bytes):
+    def __init__(self, data):
+      self.data = data
+      self.registration_obj = None
+
+    def AssociateParent(self, n, registration_obj):
+      self.n = n
+      self.registration_obj = registration_obj
+
+    def __setitem__(self, index, value):
+      self.data[index] = value
+      # Changing any data must change the underlying Registration object
+      if self.registration_obj:
+        self.registration_obj[self.n] = self.data
+
+    def __getitem__(self, index):
+      return self.data[index]
+
+    def __len__(self):
+      return len(self.data)
+
+    def __delitem__(self, index):
+      raise Exception("Can't delete from a registration data item")
+
+    def insert(self, index, value):
+      raise Exception("Can't insert into a registration data item")
+    
+    def __repr__(self):
+      return repr(bytes(self.data))
+
+
   data = bytearray()
   
   def __init__(self, data=None):
@@ -63,7 +94,9 @@ class Registration:
     for (atom, b) in self:
       if atom == n:
         # Found it!
-        return bytes(b)
+        obj = Registration.RegistrationData(b)
+        obj.AssociateParent(n, self)
+        return obj
     # If get here, haven't found it
     return None
     

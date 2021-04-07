@@ -16,11 +16,13 @@ with open("BANK01.RBK", "r+b") as f:
     # For the first three registrations in the bank (out of either 4 or 8)
     for r in rb[0:3]:
     
-        # Part L off, U1 & U2 full volume
-        r.setVolumes(127, 127, 0)
+        # Part L off, U1 full volume, U2 unchanged
+        vols = r.getVolumes()
+        r.setVolumes(127, vols[1], 0)
     
-        # Part U1 panned hard left, U2 hard right
-        r.setPans(0, 127, 40)
+        # Part U1 panned hard left, U2 hard right, L unchanged
+        pans = r.getPans()
+        r.setPans(0, 127, pans[2])
     
     # Write the bank back to file
     rb.writeFile(f)
@@ -77,7 +79,7 @@ Example:
 from casio_rbk import RegistrationBank
 ...
 # Write to a file
-with open("BANK02.RBK", "wb" as f2:
+with open("BANK02.RBK", "wb") as f2:
     MyRegBank.writeFile(f2)
 ```
 
@@ -121,6 +123,7 @@ b = reg[Atom.Volume]
 reg[Atom.Volume] = struct.pack('3B', u1_vol, u2_vol, u3_vol) + b[3:]
 ```
 
+
 #### setPans()
 
 Set stereo pan of the first three keyboard parts (U1, U2 and L):
@@ -146,6 +149,43 @@ import struct
 b = reg[Atom.Pan]
 reg[Atom.Pan] = struct.pack('3B', u1_pan, u2_pan, u3_pan) + b[3:]
 ```
+
+
+#### getVolumes()
+
+Get volume settings of the first three keyboard parts (U1, U2 and L):
+
+:blue_square: Usage:
+* getVolumes(self)
+
+:blue_square: Returns:
+* 3-tuple of integers 0 -- 127
+
+Example:
+```python
+vols = MyRegBank[1].getVolumes()
+print(f"U1 volume is {vols[0]}")
+print(f"U2 volume is {vols[1]}")
+```
+
+
+#### getPans()
+
+Get stereo pan settings of the first three keyboard parts (U1, U2 and L):
+
+:blue_square: Usage:
+* getPans(self)
+
+:blue_square: Returns:
+* 3-tuple of integers 0 -- 127; centre pan is 64
+
+Example:
+```python
+pans = MyRegBank[1].getPans()
+print(f"U1 pan is {pans[0]}")
+print(f"L  pan is {pans[2]}")
+```
+
 
 #### getPatchBank()
 
@@ -246,5 +286,5 @@ print("Patch in U1 is: " + patch_name(*MyRegBank[0].getPatchBank(Part.U1)))
 Run unit tests by calling
 
 ```bash
-python -m unittest casio_rbk/casio_rbk/tests.py
+python -m unittest casio_rbk/test/tests.py
 ```

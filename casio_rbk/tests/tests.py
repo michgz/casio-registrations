@@ -22,6 +22,7 @@ class TestCasioRbk(unittest.TestCase):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_07_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_08_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_09_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_10_Input.RBK"))
 
   def tearDownClass():
     os.remove(os.path.join(gettempdir(), "Test_01_Input.RBK"))
@@ -40,6 +41,8 @@ class TestCasioRbk(unittest.TestCase):
     os.remove(os.path.join(gettempdir(), "Test_08_Output_1.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_08_Output_2.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_09_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_10_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_10_Output.RBK"))
     pass
 
     
@@ -181,6 +184,30 @@ class TestCasioRbk(unittest.TestCase):
     
     self.assertEqual(tuple_1, tuple_2)
 
+  def test_10(self):
+    # ONLY FOR >= v1.2!!! It tests the new abstract class feature.
+    
+    with open(os.path.join(gettempdir(), "Test_10_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+      
+    # Cannot insert 
+    with self.assertRaises(Exception):
+      r[0][Atom.Volume].insert(2, 88)
+
+    # Cannot delete 
+    with self.assertRaises(Exception):
+      del(r[0][Atom.Volume][1])
+      
+    self.assertEqual(len(r[0][Atom.Volume]), 5)
+    
+    r[0][Atom.Pan][3:5] = b'\x01\x02'
+    
+    # Want to make sure that assigning as above actually changes things
+    with open(os.path.join(gettempdir(), "Test_10_Output.RBK"), "wb") as f2:
+      r.writeFile(f2)
+      
+    self.assertFalse(filecmp.cmp(os.path.join(gettempdir(), "Test_10_Input.RBK"), os.path.join(gettempdir(), "Test_10_Output.RBK")))
+      
 
 
 

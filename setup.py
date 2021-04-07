@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name = 'casio-registrations',
-    version = '1.0',
+    version = '1.2',
     description = 'For reading and writing Casio registration bank (.RBK) files',
     long_description = open('README.md').read(),
     long_description_content_type = 'text/markdown',
