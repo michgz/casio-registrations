@@ -23,6 +23,7 @@ class TestCasioRbk(unittest.TestCase):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_08_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_09_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_10_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_11_Input.RBK"))
 
   def tearDownClass():
     os.remove(os.path.join(gettempdir(), "Test_01_Input.RBK"))
@@ -43,6 +44,7 @@ class TestCasioRbk(unittest.TestCase):
     os.remove(os.path.join(gettempdir(), "Test_09_Input.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_10_Input.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_10_Output.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_11_Input.RBK"))
     pass
 
     
@@ -209,7 +211,17 @@ class TestCasioRbk(unittest.TestCase):
     self.assertFalse(filecmp.cmp(os.path.join(gettempdir(), "Test_10_Input.RBK"), os.path.join(gettempdir(), "Test_10_Output.RBK")))
       
 
-
+  def test_11(self):
+    # ONLY FOR >= v1.3! It runs the isMonoCompatible function
+    with open(os.path.join(gettempdir(), "Test_11_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+      self.assertEqual(len(r), 4)
+      for reg in r:
+        try:
+          reg.isMonoCompatible()
+        except Exception:
+          self.fail("isMonoCompatible raised ExceptionType unexpectedly!")
+        # Unless there's an exception, pass this test (for now!)
 
 
 if __name__=="__main__":

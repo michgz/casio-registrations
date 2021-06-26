@@ -8,6 +8,7 @@ An example of how to use the library:
 ```python
 from casio_rbk.casio_rbk import RegistrationBank, Part
 from casio_rbk.patch_name import patch_name
+import warnings
 
 with open("BANK01.RBK", "r+b") as f:
     # Read from file
@@ -19,6 +20,11 @@ with open("BANK01.RBK", "r+b") as f:
         # Part L off, U1 full volume, U2 unchanged
         vols = r.getVolumes()
         r.setVolumes(127, vols[1], 0)
+    
+        if not r.isMonoCompatible():
+          # If any patches are not mono compatible, may wish to raise a warning
+          # message here. Not required.
+          raise Warning("Not mono compatible, panning will not give fully mono channel separation")
     
         # Part U1 panned hard left, U2 hard right, L unchanged
         pans = r.getPans()
@@ -150,6 +156,24 @@ b = reg[Atom.Pan]
 reg[Atom.Pan] = struct.pack('3B', u1_pan, u2_pan, u3_pan) + b[3:]
 ```
 
+#### isMonoCompatible()
+
+Checks the stereo pan compatibility of the first three keyboard parts (U1, U2, L). If any
+is not compatible it returns False, otherwise True. Panning can still be used, but
+will not result in fully mono-left or mono-right channel separation.
+
+:blue_square: Usage:
+* isMonoCompatible(self)
+
+:blue_square: Parameters:
+None
+
+Example:
+```python
+import warnings
+if not MyRegBank[1].isMonoCompatible():
+  raise Warning("Panning will not give fully mono channel separation")
+```
 
 #### getVolumes()
 
@@ -286,5 +310,5 @@ print("Patch in U1 is: " + patch_name(*MyRegBank[0].getPatchBank(Part.U1)))
 Run unit tests by calling
 
 ```bash
-python -m unittest casio_rbk/test/tests.py
+python -m unittest casio_rbk/tests/tests.py
 ```
