@@ -24,6 +24,7 @@ class TestCasioRbk(unittest.TestCase):
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_09_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_10_Input.RBK"))
     shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_11_Input.RBK"))
+    shutil.copyfile(os.path.join(os.path.dirname(__file__), "CT-X700 Testing Bank.RBK"), os.path.join(gettempdir(), "Test_12_Input.RBK"))
 
   def tearDownClass():
     os.remove(os.path.join(gettempdir(), "Test_01_Input.RBK"))
@@ -45,6 +46,8 @@ class TestCasioRbk(unittest.TestCase):
     os.remove(os.path.join(gettempdir(), "Test_10_Input.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_10_Output.RBK"))
     os.remove(os.path.join(gettempdir(), "Test_11_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_12_Input.RBK"))
+    os.remove(os.path.join(gettempdir(), "Test_12_Output.RBK"))
     pass
 
     
@@ -222,6 +225,17 @@ class TestCasioRbk(unittest.TestCase):
         except Exception:
           self.fail("isMonoCompatible raised ExceptionType unexpectedly!")
         # Unless there's an exception, pass this test (for now!)
+
+  def test_12(self):
+    # ONLY FOR >= v1.4! setPatchBank wasn't working before that.
+    with open(os.path.join(gettempdir(), "Test_12_Input.RBK"), "rb") as f1:
+      r = RegistrationBank.readFile(f1)
+
+    r[0].setPatchBank(Part.U1, *r[0].getPatchBank(Part.U2))
+    r[0].setPatchBank(Part.U2, 107, 8)  # ZHENG 1
+    with open(os.path.join(gettempdir(), "Test_12_Output.RBK"), "wb") as f2:
+      r.writeFile(f2)
+    self.assertTrue(filecmp.cmp(os.path.join(gettempdir(), "Test_12_Output.RBK"), os.path.join(os.path.dirname(__file__), "Test_12_Expected_Output.RBK")))
 
 
 if __name__=="__main__":
