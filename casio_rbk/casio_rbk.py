@@ -161,10 +161,10 @@ class Registration:
           if bank_msb==int(row[2]) and patch_no==int(row[1]):
             if is_cdp:
               # Column 5 is for CDP-S
-              return row[4]!=0
+              return int(row[4]) != 0
             else:
               # Column 4 is for CT-X
-              return row[3]!=0
+              return int(row[3]) != 0
 
     # If not in the CSV file, it's compatible
     return True
