@@ -7,8 +7,6 @@ setup(
     long_description = open('README.md').read(),
     long_description_content_type = 'text/markdown',
     url = 'https://github.com/michgz/casio-registrations',
-    project_urls =
-        ['Bug Tracker = https://github.com/michgz/casio-registrations/issues'],
     classifiers =
         ['Programming Language :: Python :: 3',
          'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
